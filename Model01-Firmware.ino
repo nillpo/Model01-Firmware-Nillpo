@@ -77,18 +77,7 @@
 
 #include "Kaleidoscope-TapDance.h"
 
-
-#define Key_Exclam   LSHIFT(Key_1)
-#define Key_At       LSHIFT(Key_2)
-#define Key_Hash     LSHIFT(Key_3)
-#define Key_Dollar   LSHIFT(Key_4)
-#define Key_Percent  LSHIFT(Key_5)
-#define Key_Circ     LSHIFT(Key_6)
-#define Key_Ampr     LSHIFT(Key_7)
-#define Key_Asterisk LSHIFT(Key_8)
-#define Key_Plus     LSHIFT(Key_Equals)
-#define Key_Tilde    LSHIFT(Key_Backtick)
-
+#include "Kaleidoscope-Qukeys.h"
 
 /** This 'enum' is a list of all the macros used by the Model 01's firmware
   * The names aren't particularly important. What is important is that each
@@ -109,7 +98,7 @@ enum { MACRO_VERSION_INFO,
 
 
 //tapdance
-enum { LANG };
+enum { T_LANG };
 
 /** The Model 01's key layouts are defined as 'keymaps'. By default, there are three
   * keymaps: The standard QWERTY keymap, the "Function layer" keymap and the "Numpad"
@@ -159,8 +148,33 @@ enum { LANG };
   *
   */
 
-enum { QWERTY, NUMPAD, NUML, SYMBOL }; // layers
+enum { QWERTY, NUMPAD, NUML1, FUNC, ARROW, NUML2}; // layers
 
+#define Key_Exclam      LSHIFT(Key_1)
+#define Key_At          LSHIFT(Key_2)
+#define Key_Hash        LSHIFT(Key_3)
+#define Key_Dollar      LSHIFT(Key_4)
+#define Key_Percent     LSHIFT(Key_5)
+#define Key_Caret       LSHIFT(Key_6)
+#define Key_And         LSHIFT(Key_7)
+#define Key_Asterisk    LSHIFT(Key_8)
+#define Key_Plus        LSHIFT(Key_Equals)
+#define Key_Tilde       LSHIFT(Key_Backtick)
+#define Key_Underscore  LSHIFT(Key_Minus)
+#define Key_DQuote      LSHIFT(Key_Quote)
+#define Key_LeftA       Key_LeftArrow
+#define Key_DownA       Key_DownArrow
+#define Key_UpA         Key_UpArrow
+#define Key_RightA      Key_RightArrow
+
+#define Key_RP Key_RightParen
+#define Key_LP Key_LeftParen
+#define Key_RB Key_RightBracket
+#define Key_LB Key_LeftBracket
+#define Key_RCB Key_RightCurlyBracket
+#define Key_LCB Key_LeftCurlyBracket
+
+#define TD_LANG         TD(T_LANG)
 
 /**
   * To change your keyboard's layout from QWERTY to DVORAK or COLEMAK, comment out the line
@@ -182,19 +196,19 @@ enum { QWERTY, NUMPAD, NUML, SYMBOL }; // layers
 
 KEYMAPS(
   [QWERTY] = KEYMAP_STACKED
-  (___,        ___,   ___,   ___,   ___,   ___,   Key_LEDEffectNext,
-   ___,        Key_Q, Key_W, Key_E, Key_R, Key_T, Key_Tab,
-   TD(LANG),   Key_A, Key_S, Key_D, Key_F, Key_G,
-   Key_Equals, Key_Z, Key_X, Key_C, Key_V, Key_B, Key_Escape,
+  (___, ___,   ___,   ___,   ___,   ___,   Key_LEDEffectNext,
+   ___, Key_Q, Key_W, Key_E, Key_R, Key_T, Key_Tab,
+   ___, Key_A, Key_S, Key_D, Key_F, Key_G,
+   ___, Key_Z, Key_X, Key_C, Key_V, Key_B, Key_Escape,
    Key_LeftControl, Key_Backspace, Key_LeftGui, Key_LeftShift,
-   ShiftToLayer(NUML),
+   ShiftToLayer(NUML2),
 
    M(MACRO_ANY), ___,   ___,   ___,       ___,        ___,           LockLayer(NUMPAD),
-   ___,          Key_Y, Key_U, Key_I,     Key_O,      Key_P,         ___,
-                 Key_H, Key_J, Key_K,     Key_L,      Key_Semicolon, Key_Quote,
-   ___,          Key_N, Key_M, Key_Comma, Key_Period, Key_Slash,     Key_Minus,
-   Key_RightShift, Key_LeftAlt, Key_Spacebar, Key_RightControl,
-   ShiftToLayer(SYMBOL)),
+   TD_LANG,      Key_Y, Key_U, Key_I,     Key_O,      Key_P,         ___,
+                 Key_H, Key_J, Key_K,     Key_L,      Key_Semicolon, ___,
+   Key_Enter,    Key_N, Key_M, Key_Comma, Key_Period, Key_Slash,     ___,
+   Key_RightShift, Key_RightAlt, Key_Spacebar, Key_RightControl,
+   ShiftToLayer(NUML1)),
 
   [NUMPAD] = KEYMAP_STACKED
   (___, ___, ___, ___, ___, ___, ___,
@@ -211,33 +225,63 @@ KEYMAPS(
    ___, ___, ___, ___,
    ___),
 
-  [NUML] = KEYMAP_STACKED
-  (___, ___,        ___,    ___,    ___,     ___,     XXX,
-   ___, Key_1,      Key_2,  Key_3,  Key_4,   Key_5,   Key_F6,
-   ___, Key_F1,     Key_F2, Key_F3, Key_F4,  Key_F5,
-   ___, Key_F7,     Key_F8, Key_F9, Key_F10, Key_F11, Key_F12,
+  [NUML1] = KEYMAP_STACKED
+  (___, ___,        ___,     ___,          ___,        ___,         XXX,
+   ___, Key_Exclam, Key_At,  Key_Hash,     Key_Dollar, Key_Percent, ___,
+   ___, Key_Caret,  Key_And, Key_Asterisk, Key_LP,     Key_RP,
+   ___, ___,        Key_LB,  Key_RB,       Key_LCB,    Key_RCB,     ___,
    ___, Key_Delete, ___, ___,
    ___,
 
-   ___, ___,            ___,           ___,         ___,            ___,   ___,
-   ___, Key_6,          Key_7,         Key_8,       Key_9,          Key_0, ___,
-        Key_LeftArrow,  Key_DownArrow, Key_UpArrow, Key_RightArrow, ___,   ___,
-   ___, ___,            ___,           ___,         ___,            ___,   ___,
+   ___, ___,   ___,   ___,   ___,   ___,           ___,
+   ___, ___,   Key_7, Key_8, Key_9, Key_Backspace, ___,
+        ___,   Key_4, Key_5, Key_6, ___,           ___,
+   ___, Key_0, Key_1, Key_2, Key_3, ___,           ___,
    ___, ___, Key_Enter, ___,
    ___),
 
-  [SYMBOL] = KEYMAP_STACKED
-  (___, ___,        ___,    ___,      ___,        ___,         XXX,
-   ___, ___,        ___,    ___,      ___,        ___,         ___,
-   ___, Key_Exclam, Key_At, Key_Hash, Key_Dollar, Key_Percent,
-   ___, ___,        ___,    ___,      ___,        ___,         ___,
-   Key_LeftControl, Key_Backspace, Key_LeftGui, Key_LeftShift,
+  [FUNC] = KEYMAP_STACKED
+  (___, ___, ___, ___, ___,      ___,          XXX,
+   ___, ___, ___, ___, Key_Home, Key_PageUp,   ___,
+   ___, ___, ___, ___, Key_End,  Key_PageDown, 
+   ___, ___, ___, ___, ___,      ___,          ___,
+   ___, Key_Delete, ___, ___,
    ___,
 
-   ___, ___,            ___,          ___,             ___,                  ___,                   ___,
-   ___, Key_Circ,       Key_Ampr,     Key_Asterisk,    Key_LeftParen,        Key_RightParen,        ___,
-        ___,            Key_Equals,   Key_Plus,        Key_LeftCurlyBracket, Key_RightCurlyBracket, ___,
-   ___, Key_Tilde,      Key_Backtick, Key_LeftBracket, Key_RightBracket,     Key_Backslash,         Key_Pipe,
+   ___, ___,   ___,    ___,    ___,    ___,     ___,
+   ___, ___,   Key_F7, Key_F8, Key_F9, Key_F10, ___,
+        ___,   Key_F4, Key_F5, Key_F6, Key_F11, ___,
+   ___, Key_0, Key_F1, Key_F2, Key_F3, Key_F12, ___,
+   ___, ___, Key_Enter, ___,
+   ___),
+
+  [ARROW] = KEYMAP_STACKED
+  (___, ___, ___, ___, ___, ___, XXX,
+   ___, ___, ___, Key_mouseUp, ___, ___, ___,
+   ___, ___, Key_mouseL, Key_mouseDn, Key_mouseR, ___,
+   ___, ___, ___, ___, ___, ___, ___,
+   ___, Key_Delete, ___, ___,
+   ___,
+
+   ___, ___,       ___,        ___,     ___,        ___, ___,
+   ___, ___,       ___,        ___,     ___,        ___, ___,
+        Key_LeftA, Key_DownA,  Key_UpA, Key_RightA, ___, ___, 
+   ___, ___,       ___,        ___,     ___,        ___, ___,
+   ___, ___, Key_Enter, ___,
+   ___),
+
+  [NUML2] = KEYMAP_STACKED
+  (___, ___, ___, ___, ___,        ___,          XXX,
+   ___, ___, ___, ___, Key_Tab,    TD_LANG,      ___,
+   ___, ___, ___, ___, Key_Equals, Key_Backtick,
+   ___, ___, ___, ___, Key_Plus,   Key_Tilde,    ___,
+   ___, Key_Delete, ___, ___,
+   ___,
+
+   ___, ___,        ___,            ___,           ___, ___, ___,
+   ___, Key_Esc,    ___,            ___,           ___, ___, ___,
+        Key_Quote,  Key_Minus,      Key_Backslash, ___, ___, ___,
+   ___, Key_DQuote, Key_Underscore, Key_Pipe,      ___, ___, ___, 
    ___, ___, Key_Enter, ___,
    ___),
 ) //KEYMAPS(
@@ -303,8 +347,6 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
   }
   return MACRO_NONE;
 }
-
-
 
 // These 'solid' color effect definitions define a rainbow of
 // LED color modes calibrated to draw 500mA or less on the
@@ -481,8 +523,49 @@ KALEIDOSCOPE_INIT_PLUGINS(
   // by BIOSes) and Report (NKRO).
   USBQuirks,
 
-  TapDance
+  TapDance,
+
+  Qukeys
 );
+
+
+static void pressKey(Key key){
+  kaleidoscope::driver::hid::KeyboardioProps::Keyboard keyboard = Kaleidoscope.hid().keyboard();
+  keyboard.pressKey(key);
+  keyboard.sendReport();
+  keyboard.releaseKey(key);
+  keyboard.sendReport();
+}
+
+static void sendLangChange(uint8_t tap_count, kaleidoscope::plugin::TapDance::ActionType tap_dance_action) {
+
+  if(tap_dance_action != kaleidoscope::plugin::TapDance::ActionType::Release)
+    return;
+
+  switch(tap_count) {
+    case 1:
+      pressKey(Key_Lang2);
+      pressKey(Key_F13);
+     break;
+    case 2:
+      pressKey(Key_Lang1);
+      pressKey(Key_F14);
+     break;
+    default:
+      pressKey(Key_Lang2);
+      pressKey(Key_F13);
+  }
+}
+
+//todo qmk like LT implement
+void tapDanceAction(uint8_t tap_dance_index, KeyAddr key_addr, uint8_t tap_count,
+                    kaleidoscope::plugin::TapDance::ActionType tap_dance_action) {
+
+  switch (tap_dance_index) {
+    case T_LANG:
+      return sendLangChange(tap_count, tap_dance_action);
+  }
+}
 
 /** The 'setup' function is one of the two standard Arduino sketch functions.
  * It's called when your keyboard first powers up. This is where you set up
@@ -530,6 +613,13 @@ void setup() {
   ColormapEffect.max_layers(5);
 
   TapDance.time_out = 1000;
+
+  //Qukeys.setTimeout(200);
+
+  MouseKeys.speed = 20;
+
+  QUKEYS(kaleidoscope::plugin::Qukey(0, KeyAddr(1, 7), ShiftToLayer(FUNC)),
+         kaleidoscope::plugin::Qukey(0, KeyAddr(1, 8), ShiftToLayer(ARROW)));
 }
 
 /** loop is the second of the standard Arduino sketch functions.
