@@ -93,7 +93,11 @@
   */
 
 enum { MACRO_VERSION_INFO,
-       MACRO_ANY
+       MACRO_ANY,
+       CEILING_LIGHT_ON,
+       CEILING_LIGHT_OFF,
+       DESK_LIGHT_ON,
+       DESK_LIGHT_OFF
      };
 
 
@@ -175,7 +179,11 @@ enum { QWERTY, NUMPAD, NUML1, FUNC, ARROW, NUML2}; // layers
 #define Key_LCB Key_LeftCurlyBracket
 
 #define TD_LANG         TD(T_LANG)
+#define C_ON              M(CEILING_LIGHT_ON)
+#define C_OFF             M(CEILING_LIGHT_OFF)
 
+#define D_ON              M(DESK_LIGHT_ON)
+#define D_OFF             M(DESK_LIGHT_OFF)
 /**
   * To change your keyboard's layout from QWERTY to DVORAK or COLEMAK, comment out the line
   *
@@ -211,10 +219,10 @@ KEYMAPS(
    ShiftToLayer(NUML1)),
 
   [NUMPAD] = KEYMAP_STACKED
-  (___, ___, ___, ___, ___, ___, ___,
-   ___, ___, ___, ___, ___, ___, ___,
-   ___, ___, ___, ___, ___, ___,
-   ___, ___, ___, ___, ___, ___, ___,
+  (___, C_ON,  D_ON,  ___, ___, ___, ___,
+   ___, C_OFF, D_OFF, ___, ___, ___, ___,
+   ___, ___,   ___,   ___, ___, ___,
+   ___, ___,   ___,   ___, ___, ___, ___,
    ___, ___, ___, ___,
    ___,
 
@@ -334,6 +342,37 @@ static void anyKeyMacro(uint8_t keyState) {
 
  */
 
+enum LIGHT_STATE {
+  ON,
+  OFF
+};
+
+void ceiling_light_handle(uint8_t state, uint8_t keyState) {
+  if (keyToggledOn(keyState)) {
+    switch (state) {
+      case ON:
+        Macros.play(MACRO(D(LeftControl), D(LeftShift), D(PageUp), D(C), U(PageUp), U(C), U(LeftControl), U(LeftShift)));
+        break;
+      case OFF:
+        Macros.play(MACRO(D(LeftControl), D(LeftShift), D(PageDown), D(C), U(PageDown), U(C), U(LeftControl), U(LeftShift)));
+        break;
+      }
+  }
+}
+
+void desk_light_handle(uint8_t state, uint8_t keyState) {
+  if (keyToggledOn(keyState)) {
+    switch (state) {
+      case ON:
+        Macros.play(MACRO(D(LeftControl), D(LeftShift), D(PageUp), D(D), U(PageUp), U(D), U(LeftControl), U(LeftShift)));
+        break;
+      case OFF:
+        Macros.play(MACRO(D(LeftControl), D(LeftShift), D(PageDown), D(D), U(PageDown), U(D), U(LeftControl), U(LeftShift)));
+        break;
+      }
+  }
+}
+
 const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
   switch (macroIndex) {
 
@@ -344,7 +383,21 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
   case MACRO_ANY:
     anyKeyMacro(keyState);
     break;
+
+  case CEILING_LIGHT_ON:
+    ceiling_light_handle(LIGHT_STATE::ON, keyState);
+    break;
+  case CEILING_LIGHT_OFF:
+    ceiling_light_handle(LIGHT_STATE::OFF, keyState);
+    break; 
+  case DESK_LIGHT_ON:
+    desk_light_handle(LIGHT_STATE::ON, keyState);
+    break; 
+  case DESK_LIGHT_OFF:
+    desk_light_handle(LIGHT_STATE::OFF, keyState);
+    break; 
   }
+
   return MACRO_NONE;
 }
 
@@ -353,13 +406,13 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
 // Keyboardio Model 01.
 
 
-static kaleidoscope::plugin::LEDSolidColor solidRed(160, 0, 0);
-static kaleidoscope::plugin::LEDSolidColor solidOrange(140, 70, 0);
-static kaleidoscope::plugin::LEDSolidColor solidYellow(130, 100, 0);
-static kaleidoscope::plugin::LEDSolidColor solidGreen(0, 160, 0);
-static kaleidoscope::plugin::LEDSolidColor solidBlue(0, 70, 130);
-static kaleidoscope::plugin::LEDSolidColor solidIndigo(0, 0, 170);
-static kaleidoscope::plugin::LEDSolidColor solidViolet(130, 0, 120);
+//static kaleidoscope::plugin::LEDSolidColor solidRed(160, 0, 0);
+//static kaleidoscope::plugin::LEDSolidColor solidOrange(140, 70, 0);
+//static kaleidoscope::plugin::LEDSolidColor solidYellow(130, 100, 0);
+//static kaleidoscope::plugin::LEDSolidColor solidGreen(0, 160, 0);
+//static kaleidoscope::plugin::LEDSolidColor solidBlue(0, 70, 130);
+//static kaleidoscope::plugin::LEDSolidColor solidIndigo(0, 0, 170);
+//static kaleidoscope::plugin::LEDSolidColor solidViolet(130, 0, 120);
 
 /** toggleLedsOnSuspendResume toggles the LEDs off when the host goes to sleep,
  * and turns them back on when it wakes up.
@@ -466,6 +519,9 @@ KALEIDOSCOPE_INIT_PLUGINS(
   // We start with the LED effect that turns off all the LEDs.
   LEDOff,
 
+  // The stalker effect lights up the keys you've pressed recently
+  StalkerEffect,
+
   // The rainbow effect changes the color of all of the keyboard's keys at the same time
   // running through all the colors of the rainbow.
   LEDRainbowEffect,
@@ -476,20 +532,17 @@ KALEIDOSCOPE_INIT_PLUGINS(
 
   // The chase effect follows the adventure of a blue pixel which chases a red pixel across
   // your keyboard. Spoiler: the blue pixel never catches the red pixel
-  LEDChaseEffect,
+  //LEDChaseEffect,
 
   // These static effects turn your keyboard's LEDs a variety of colors
-  solidRed, solidOrange, solidYellow, solidGreen, solidBlue, solidIndigo, solidViolet,
+  // solidRed, solidOrange, solidYellow, solidGreen, solidBlue, solidIndigo, solidViolet,
 
   // The breathe effect slowly pulses all of the LEDs on your keyboard
   LEDBreatheEffect,
 
   // The AlphaSquare effect prints each character you type, using your
   // keyboard's LEDs as a display
-  AlphaSquareEffect,
-
-  // The stalker effect lights up the keys you've pressed recently
-  StalkerEffect,
+  //AlphaSquareEffect,
 
   // The LED Palette Theme plugin provides a shared palette for other plugins,
   // like Colormap below
