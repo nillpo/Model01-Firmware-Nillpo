@@ -598,15 +598,12 @@ static void sendLangChange(uint8_t tap_count, kaleidoscope::plugin::TapDance::Ac
   switch(tap_count) {
     case 1:
       pressKey(Key_Lang2);
-      pressKey(Key_F13);
      break;
     case 2:
       pressKey(Key_Lang1);
-      pressKey(Key_F14);
      break;
     default:
       pressKey(Key_Lang2);
-      pressKey(Key_F13);
   }
 }
 
